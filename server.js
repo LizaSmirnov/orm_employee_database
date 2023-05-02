@@ -108,9 +108,108 @@ const addDept = () => {
 
 const addRole = () => {
     const deptChoices = () => db.promise().query( `SELECT * FROM deprtments`).then((rows) =>{
-        let a
+        let deptNames = rows[0].map(obj => obj.name);
+    })
+    inquirer
+    .prompt([
+        {
+            type:"input",
+            message:"Please choose a new role name you would like to add",
+            name:"addRoleTitle"
+        },
+        {
+            type:"input",
+            message:"Please choose a salary for this role",
+            name:"addRoleSalary"
+        },
+        {
+            type:"list",
+            message:"Please choose which department this new role is in",
+            name:"addDept",
+            choices: deptChoices //we get from using our promise up above
+        }
+    ]).then(ans => {
+        db.promise().query(`SELECT id FROM departments WHERE department_name = ?`, ans.addDept).then(answer =>{
+            let mapId = answer[0].map(obj => obj.id);
+            return mapId[0]
+        })
+        .then((mapId) =>{
+            db.promise().query(`INSERT INTO roles(title, salary, department_id) VALUES(?,?,?)`, ans.addRoleTitle, ans.addRoleSalary, mapId);
+            init();
+        })
     })
 }
+
+const addEmp = () => {
+    
+    const roleChoices = () => db.promise().query( `SELECT * FROM roles`).then((rows) =>{
+        let roleNames = rows[0].map(obj => obj.name);
+    })
+
+    inquirer
+    .prompt[(
+        {
+            type:"input",
+            message:"What is the employee's first name?",
+            name:"addFirst"
+        },
+        {
+            type:"input",
+            message:"What is employee's last name?",
+            name:"addLast"
+        },
+        {
+        type:"list",
+        message:"Please assign a role",
+        name:"addRole",
+        choices: roleChoices // from the promise up above
+        }
+    )].then(ans => {
+        db.promise().query(`SELECT id FROM roles WHERE department_name = ?`, ans.addRole)
+
+        db.query(`INSERT INTO employees(first_name, last_name) VALUES(?,?)`, [ans.addFirst, ans.addLast], (err,results) => {
+            if (err){
+                console.error(err)
+            } else {
+                db.query(`SELECT * FROM employees`, (err, results) => {
+                    err ? console.error(err) : console.table(results);
+                    init();
+                })
+            }
+        })
+    })
+}
+
+const updateEmployee = () => {
+    const employeeChoices = () => db.promise().query( `SELECT * FROM employees`).then((rows) =>{
+        let empNames = rows[0].map(obj => obj.name) 
+    })
+
+    const roleChoices = () => db.promise().query( `SELECT * FROM roles`).then((rows) =>{
+            let roleNames = rows[0].map(obj => obj.name)
+    })
+
+
+    inquirer
+    .prompt[(
+        {
+            type:"list",
+            message:"Which employee would you like to update?",
+            name:"addEmp",
+            choices: employeeChoices //promise above
+        }, 
+        {
+            type:"list",
+            message:"Which role are you assigning them?",
+            name:"addRole",
+            choices: roleChoices //promise above
+        }
+    )].then(ans =>{
+        
+    })
+
+}
+
 
 
 
