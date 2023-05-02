@@ -5,11 +5,14 @@ CREATE TABLE employees (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    employee_id INT,
     job_title VARCHAR(30) NOT NULL,//repeat
     department VARCHAR(30) NOT NULL,//repeat
     salary INTEGER NOT NULL,//repeat
-    reporting_manager VARCHAR(30) NOT NULL,
+    role_id INT,
+    manager_id INT REFERENCES employee(id) ON DELETE SET NULL,
+    CONSTRAINTS fk_role
+    FOREIGN KEY (role_id)
+    REFERENCES roles(id) ON DELETE SET NULL
 );
 
 CREATE TABLE departments (
@@ -19,10 +22,14 @@ CREATE TABLE departments (
 
 CREATE TABLE roles (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    job_title VARCHAR(30) NOT NULL,//repeat
-    role_id INT,
+    title VARCHAR(30) NOT NULL,//repeat
     department VARCHAR(30) NOT NULL,//repeat
     salary INTEGER NOT NULL,//repeat
+    department_id INT,
+    CONSTRAINT fk_departments
+    FOREIGN KEY (department_id)
+    REFERENCES departments(id)
+    ON DELETE SET NULL
 );
 
 
