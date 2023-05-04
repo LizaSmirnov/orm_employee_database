@@ -1,12 +1,8 @@
-const cTable = require('console.table');
+const { prompt } = require("inquirer");
 const { default: inquirer } = require('inquirer');
 const mysql = require('mysql2');
+require("console.table");
 
-const PORT = process.env.PORT || 4004;
-const app = express();
-
-app.use=(express.urlencoded({ extended: false}));
-app.use(express.json());
 
 const db = mysql.createConnection(
     {
@@ -16,12 +12,17 @@ const db = mysql.createConnection(
         database: 'employees_db'
     },
     console.log(`connected to the employee_db database.`)
-);
+    );
+    
+    db.connect((err) => {
+        if (err) throw err;
+        console.log('connected as id ' + db.threadId);
+        init();
+    });
 
-//initialize questions 
-const init = () =>{
-    inquirer
-    .prompt([
+function init() {
+    // inquirer
+    prompt([
         {
         type:"list",
         message: "Please choose what you would like to do",
@@ -59,7 +60,7 @@ const init = () =>{
 }).catch(err => console.error(err));
 }
 
-init();
+
 
 //create const to query select table and then display using the cTable
 const viewDept = () => {
@@ -213,11 +214,11 @@ const updateEmployee = () => {
 
 
 
-//Default response for any other request (NOT FOUND)
-app.use((req, res)=>{
-res.status(404).end();
-});
+// //Default response for any other request (NOT FOUND)
+// app.use((req, res)=>{
+// res.status(404).end();
+// });
 
-app.listen( PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-});
+// app.listen( PORT, () => {
+//     console.log(`Server is running on port ${PORT}`)
+// });

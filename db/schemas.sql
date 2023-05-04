@@ -1,16 +1,17 @@
 DROP DATABASE IF EXISTS employees_db;
 CREATE DATABASE employees_db;
 USE employees_db;
+
 CREATE TABLE employees (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    job_title VARCHAR(30) NOT NULL,//repeat
-    department VARCHAR(30) NOT NULL,//repeat
-    salary INTEGER NOT NULL,//repeat
+    job_title VARCHAR(30) NOT NULL,
+    department VARCHAR(30) NOT NULL,
+    salary INT NOT NULL,
     role_id INT,
-    manager_id INT REFERENCES employee(id) ON DELETE SET NULL,
-    CONSTRAINTS fk_role
+    manager_id INT REFERENCES employees(id) ON DELETE SET NULL,
+    CONSTRAINT fk_role
     FOREIGN KEY (role_id)
     REFERENCES roles(id) ON DELETE SET NULL
 );
@@ -22,16 +23,14 @@ CREATE TABLE departments (
 
 CREATE TABLE roles (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(30) NOT NULL,//repeat
-    department VARCHAR(30) NOT NULL,//repeat
-    salary INTEGER NOT NULL,//repeat
+    title VARCHAR(30) NOT NULL,
+    salary INT NOT NULL,
     department_id INT,
     CONSTRAINT fk_departments
     FOREIGN KEY (department_id)
     REFERENCES departments(id)
     ON DELETE SET NULL
 );
-
 
 -- WHEN I choose to add a department
 -- THEN I am prompted to enter the name of the department and that department is added to the database
