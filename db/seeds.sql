@@ -1,23 +1,22 @@
-INSERT INTO employees (first_name, last_name, job_title, department, salary, reporting_manager)
-VALUES ('Elliot', 'Smith', 'Accounting', '$400,425.25', 'Jane Smith'),
-       ('Jane', 'Smith', 'Management', '$1,000,000.01', 'Beth Day'),
-       ('Beth', 'Day', 'CEO', '$2,000,000', 'none'),
-       ('James', 'Pull', 'Janitorial', '$24.21/hr', 'Jane Smith'),
-       ('Igor', 'Stein', 'Secretary', '22.25/hr', 'Jane Smith');
-
-       INSERT INTO roles (job_title, department, salary)
-VALUES ('CEO', 'Management', '2,000,000'),
-       ('Janitor', 'Janitorial', '$24.21/hr'),
-       ('Manger', 'Mangement', '$1,000,000.01'),
-       ('Accountant', 'Accounting','$400,425.25'),
-       ('Secretary', 'Office','22.25/hr');
-
-
-       INSERT INTO departments (department_name)
+INSERT INTO departments (department_name)
 VALUES ('Management'),
        ('Janitorial'),
-       ('Mangement'),
        ('Accounting'),
        ('Office');
+INSERT INTO roles (title, department_id, salary)
+VALUES ('CEO', 1, 2000000),
+       ('Janitor', 2, 24),
+       ('Manger', 1, 1000000),
+       ('Accountant', 3, 400425),
+       ('Secretary', 4, 22);
+INSERT INTO employees (first_name, last_name, department, manager_id)
+VALUES ('Beth', 'Day', 'CEO', NULL),
+       ('Jane', 'Smith', 'Management', 1),
+       ('James', 'Pull', 'Janitorial', 2),
+       ('Igor', 'Stein', 'Secretary', 2),
+       ('Elliot', 'Smith', 'Accounting', 2);
+
+
+
 
        

@@ -1,8 +1,7 @@
 const { prompt } = require("inquirer");
-const { default: inquirer } = require('inquirer');
+const inquirer = require("inquirer");
 const mysql = require('mysql2');
 require("console.table");
-
 
 const db = mysql.createConnection(
     {
@@ -12,61 +11,69 @@ const db = mysql.createConnection(
         database: 'employees_db'
     },
     console.log(`connected to the employee_db database.`)
-    );
-    
-    db.connect((err) => {
-        if (err) throw err;
-        console.log('connected as id ' + db.threadId);
-        init();
-    });
+);
+
+db.connect((err) => {
+    if (err) throw err;
+    console.log('connected as id ' + db.threadId);
+    init();
+});
 
 function init() {
-    // inquirer
     prompt([
         {
-        type:"list",
-        message: "Please choose what you would like to do",
-        name:"firstPrompt",
-        choices:[
-        'View all departments',
-        'View all roles',
-        'View all employees', 
-        'Add a department', 
-        'Add a role',
-        'Add an employee',
-        'Update an employee role',
-        'Nothing'
-    ]
+            type: "list",
+            message: "Please choose what you would like to do",
+            name: "firstPrompt",
+            choices: [
+                'View all departments',
+                'View all roles',
+                'View all employees', 
+                'Add a department', 
+                'Add a role',
+                'Add an employee',
+                'Update an employee role',
+                'Nothing'
+            ]
+        }
+    ]).then(ans => {
+        switch (ans.firstPrompt) {
+            case 'View all departments':
+                viewDept();
+                break;
+            case 'View all roles':
+                viewRoles();
+                break;
+            case 'View all employees':
+                viewEmp();
+                break;
+            case 'Add a department':
+                addDept();
+                break;
+            case 'Add a role':
+                addRole();
+                break;
+            case 'Add an employee':
+                addEmp();
+                break;
+            case 'Update an employee role':
+                updateRole();
+                break;
+            case 'Nothing':
+                console.log('Okay then.');
+                process.exit();
+        }
+    }).catch(err => console.error(err));
 }
-]).then(ans => {
-    switch (ans.initialize){
-        case 'View all departments' : viewDept();
-            break;
-        case 'View all roles' : viewRoles();
-            break;
-        case 'View all employees' : viewEmp();
-            break;
-        case 'Add a department' : addDept();
-            break;
-        case 'Add a role' : addRole();
-            break;
-        case 'Add an employee' : addEmp();
-            break;
-        case 'Update an employee role' : updateRole();
-            break;
-        case 'Nothing' : console.log('Okay then.');
-            process.exit();
-    }
-}).catch(err => console.error(err));
-}
 
-
-
-//create const to query select table and then display using the cTable
 const viewDept = () => {
-    db.query(`SELECT * FROM departments`, (err, results) =>{
-        err ? console.error(err) : console.table(results);
-        init();
+    db.query(`SELECT * FROM departments`, (err, results) => {
+        if (err) {
+            console.error(err)
+        } else {
+            console.table(results);
+            init();
+}
     })
 }
 
