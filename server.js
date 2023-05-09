@@ -55,7 +55,6 @@ function init() {
                 break;
             case 'Add an employee':
                 addEmp()
-                addManager();
                 break;
             case 'Update an employee role':
                 updateEmp();
@@ -120,12 +119,11 @@ const addRole = async () => {
     const rows = await db.promise().query( `SELECT * FROM departments`);
     
     let deptNames = rows[0].map(obj => obj.department_name);
-    console.log(deptNames);
     return deptNames;
     };
 
     const choices = await deptChoices();
-    console.log(choices);
+
     inquirer
     .prompt([
         {
@@ -150,26 +148,29 @@ const addRole = async () => {
             return mapId[0]
         })
         .then((mapId) =>{
-            db.promise().query(`INSERT INTO roles(title, salary, department_id) VALUES(?,?,?)`, [ans.addRoleTitle, ans.addRoleSalary, mapId]);
+            db.promise().query(`INSERT INTO roles(title, salary, department_id) VALUES(?,?,?)`, [ans.addRoleTitle, ans.addRoleSalary, mapId]).then(() =>{
+                db.query('SELECT * FROM roles', (err, results) => {
+                    err ? console.error(err) : console.table(results);
             init();
+                })
+            })
         })
     })
-};
-
+}
 
 const addEmp = async () => {
-        const roleChoices = async () => {
-        const roles = await db.promise().query( `SELECT * FROM roles`);
+    const roleChoices = async () => {
+    const roles = await db.promise().query( `SELECT * FROM roles`);
 
-        let roleNames = roles[0].map(obj => obj.title);
-        return roleNames;
+    let roleNames = roles[0].map(obj => obj.title);
+    return roleNames;
     };
-        const managerChoices = async () => {
-        const manager = await db.promise().query( `SELECT * FROM employees`);
+    const managerChoices = async () => {
+    const manager = await db.promise().query( `SELECT * FROM employees`);
 
-        let managerNames = manager[0].map(obj => obj.first_name + ' '+ obj.last_name);
-        return managerNames;
-        }
+    let managerNames = manager[0].map(obj => obj.first_name + ' '+ obj.last_name);
+    return managerNames;
+    }
     const choices1 = await roleChoices();
     const choices2 = await managerChoices();
     
@@ -193,7 +194,7 @@ const addEmp = async () => {
         },
         {
             type:"input",
-            message:"What is the employee's department?",
+            message:"What is the employee's department name?",
             name:"addDepartment"
           },
         {
@@ -209,19 +210,17 @@ const addEmp = async () => {
         const managerIdQuery = await db.promise().query(`SELECT id FROM employees WHERE CONCAT(first_name, ' ', last_name) = ?`, ans.addManager);
         const managerId = managerIdQuery[0][0].id;
         
-        await db.promise().query(`INSERT INTO employees(first_name, last_name, role_id, department, manager_id) VALUES(?,?,?,?,?)`, [ans.addFirst, ans.addLast, roleId, ans.addDepartment, managerId], (err,results) => {
-            if (err){
-                console.error(err)
-            } else {
-                db.query(`SELECT * FROM employees`, (err, results) => {
-                    err ? console.error(err) : console.table(results);
-                    init();
-                })
-            }
+        db.promise().query(`INSERT INTO employees(first_name, last_name, role_id, department, manager_id) VALUES(?,?,?,?,?)`, [ans.addFirst, ans.addLast, roleId, ans.addDepartment, managerId])
+        .then(insertResult => {
+          return db.promise().query(`SELECT * FROM employees`);
         })
-    })
-};
-
+        .then(selectResult => {
+          console.table(selectResult[0]);
+          init();
+        })
+        .catch(err => console.error(err));
+    });
+  };
 
 
 const updateEmp = async () => {
@@ -230,7 +229,7 @@ const updateEmp = async () => {
         return empNames;
     })
 
-    const roleChoices = async () => await db.promise().query( `SELECT id FROM roles`).then((rows) =>{
+    const roleChoices = async () => await db.promise().query( `SELECT * FROM roles`).then((rows) =>{
             let roleNames = rows[0].map(obj => ({ name: obj.title, value:obj.id }))
             return roleNames;
     })
@@ -244,13 +243,13 @@ const updateEmp = async () => {
             type:"list",
             message:"Which employee would you like to update?",
             name:"addEmp",
-            choices: employeeChoices //promise above
+            choices: updateEmp //promise above
         }, 
         {
             type:"list",
             message:"Which role are you assigning them?",
             name:"addRole",
-            choices: roleChoices //promise above
+            choices: updateRole//promise above
         }
     ]).then(async ans =>{
         await db.promise().query(`UPDATE employees SET role_id = ? WHERE first_name = ?`, [ans.addRole, ans.addEmp]);
