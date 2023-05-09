@@ -20,6 +20,9 @@
 ## Description
 This app is used using the Content Manangement System (CMS) with Inquirer, Node.js and MySQL. With this application users are able to update employees, add new employees, view roles, view departments, and much more. 
 
+## Video
+https://www.loom.com/share/f24d1cc0db7840ef913bb90f296b45fe
+
 ## Installation
 Please download the following on your command line. Inquirer, Node.js(node -v), and MYSQL. Both Inquirer and MYSQL are npm packages. 
 
